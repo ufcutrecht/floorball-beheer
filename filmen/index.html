@@ -29,7 +29,7 @@
 
 <section aria-labelledby="h-login" id="loginBox">
   <h2 id="h-login">Inloggen</h2>
-  <p id="loginOut" style="margin:0">Log in om filmpjes op te slaan. Zonder inloggen kun je de lijstjes gebruiken en de beschrijving kopiëren.</p>
+  <p id="loginOut" style="margin:0">Log in om filmpjes en beschrijvingen op te slaan en in te sturen.</p>
   <div data-login></div>
 </section>
 
@@ -125,7 +125,6 @@
 
   <div class="btns">
     <button type="button" class="primary hidden" id="send">Insturen</button>
-    <button type="button" class="ghost" id="copy">Kopieer tekst</button>
     <button type="button" class="ghost small hidden" id="done">Markeer als verwerkt</button>
     <button type="button" class="danger small hidden" id="del">Oefening verwijderen</button>
   </div>
@@ -135,7 +134,7 @@
     <button type="button" class="ghost small" id="delNo">Annuleren</button>
   </div>
   <p class="status" id="status" role="status"></p>
-  <p class="muted" style="margin:0">Na "Insturen" zeg je in de chat met Claude: "verwerk de nieuwe oefeningen". Claude haalt de beschrijving en de filmpjes dan zelf op. "Kopieer tekst" is er voor als je de tekst toch wilt plakken.</p>
+  <p class="muted" style="margin:0">Na "Insturen" zeg je in de chat met Claude: "verwerk de nieuwe oefeningen". Claude haalt de beschrijving en de filmpjes dan zelf op.</p>
   <details>
     <summary class="muted">Tekst bekijken</summary>
     <pre class="out" id="out"></pre>
@@ -301,7 +300,6 @@
     $('send').classList.toggle('hidden',!online);
     $('send').textContent=cur.status==='concept'?'Insturen':(cur.status==='verwerkt'?'Verwerkt in de app':'Opnieuw insturen');
     $('send').disabled=busy>0||cur.status==='verwerkt';
-    $('copy').disabled=busy>0;
     $('done').classList.toggle('hidden',!(online&&cur.id&&cur.status==='ingestuurd'));
     $('del').classList.toggle('hidden',!(online&&cur.id));
     $('newEx').disabled=busy>0;
@@ -360,36 +358,6 @@
     var m={};(res||[]).forEach(function(r){if(r&&r.signedURL&&r.path)m[r.path]=BASE+'/storage/v1'+(r.signedURL.charAt(0)==='/'?'':'/')+r.signedURL;});
     return m;
   }
-  /* Insturen en kopiëren. iPhone (Safari) staat kopiëren alleen toe direct na de tik,
-     dus de tekst gaat als belofte naar het klembord terwijl de links nog worden gemaakt. */
-  $('copy').addEventListener('click',function(){
-    if(!hasContent()){setStatus('Vul eerst iets in of voeg een filmpje toe.','err');return;}
-    var linkFail=false;
-    var made=(async function(){
-      var links=null;
-      if(online&&cur.videos.length){try{links=await signed(cur.videos.map(function(x){return x.path;}),7*24*3600);}catch(e){linkFail=true;}}
-      var t=text(links);$('out').textContent=t;return t;
-    })();
-    function fallback(){
-      made.then(function(){
-        $('out').parentNode.open=true;var r=document.createRange();r.selectNodeContents($('out'));
-        var s=window.getSelection();s.removeAllRanges();s.addRange(r);
-        setStatus('Kopiëren lukte niet automatisch. De tekst hieronder is geselecteerd: kies "Kopieer".');
-      });
-    }
-    function ok(){setStatus(linkFail?'Gekopieerd, maar zonder links naar de filmpjes (die maken lukte niet).':'Gekopieerd. Plak de tekst in de chat met Claude.',linkFail?'err':'ok');}
-    try{
-      if(window.ClipboardItem&&navigator.clipboard&&navigator.clipboard.write){
-        var item=new ClipboardItem({'text/plain':made.then(function(t){return new Blob([t],{type:'text/plain'});})});
-        navigator.clipboard.write([item]).then(ok,function(){
-          made.then(function(t){return navigator.clipboard.writeText(t);}).then(ok,fallback);
-        });
-      }else{
-        made.then(function(t){return navigator.clipboard.writeText(t);}).then(ok,fallback);
-      }
-    }catch(e){fallback();}
-  });
-
   /* ---------- filmpjes per opname ---------- */
   var pending=[];
   var CHECK='<svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg>';

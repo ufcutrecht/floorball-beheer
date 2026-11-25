@@ -39,7 +39,7 @@ op "Opnieuw insturen" te tikken.
 Zet de oefening daarna op verwerkt:
 `update public.film_oefeningen set status = 'verwerkt', updated_at = now() where id = '<id>';`
 
-Als reserve kan Remco met "Kopieer tekst" dezelfde beschrijving met links in de chat plakken.
+
 
 ## Filmpjes opruimen
 
