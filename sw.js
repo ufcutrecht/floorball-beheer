@@ -1,7 +1,7 @@
 /* Offline-app: eerst het netwerk (zodat je de nieuwste versie krijgt), anders de bewaarde kopie.
    De cachenaam begint met "ufc-beheer-": de trainersapp en gymles-app op hetzelfde domein
    ruimen alleen caches op die met "floorball-" beginnen. */
-const CACHE = "ufc-beheer-v4";
+const CACHE = "ufc-beheer-v5";
 const CORE = ["./", "index.html", "manifest.webmanifest", "filmen/", "shared/config.js", "shared/auth.js", "shared/style.css",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "icons/ufc-logo.png"];
 
@@ -14,7 +14,7 @@ self.addEventListener("activate", e => {
 self.addEventListener("fetch", e => {
   const req = e.request, url = new URL(req.url);
   if (req.method !== "GET" || url.origin !== location.origin) return;   // Supabase en filmpjes altijd live
-  e.respondWith(fetch(req).then(res => {
+  e.respondWith(fetch(req, { cache: "no-cache" }).then(res => {   // altijd even bij GitHub navragen, niet 10 minuten de oude kopie
     if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
     return res;
   }).catch(() => caches.match(req).then(hit => hit || caches.match("index.html"))));
