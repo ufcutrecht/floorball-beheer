@@ -14,7 +14,7 @@ De oefeningen zelf staan niet hier maar in `ufcutrecht/floorball-training` (zie 
 | `filmen/` | "Oefening filmen": filmpjes per opname (lege opstelling, rustige ronde, op tempo, varianten) en een beschrijving per oefening, opgeslagen in Supabase (tabel `film_oefeningen`, besloten opslagbak `filmpjes`). |
 | `shared/auth.js` | Inloggen bij Supabase (e-mail en wachtwoord), `FBAuth.api(...)` voor verzoeken met de sessie. Een element met `data-login` krijgt vanzelf het inlogvak. |
 | `shared/config.js` | Supabase-adres en publishable key, dezelfde als in floorball-training (mag openbaar). |
-| `shared/style.css` | Opmaak, in de kleuren van de trainersapp; licht en donker via de variabelen in `:root`. |
+| `shared/style.css` | Opmaak, in de kleuren van ufcutrecht.nl (grijze achtergrond, donkere kopbalk met blauwe streep, blauwe links, witte blokken); licht en donker via de variabelen in `:root`. |
 | `supabase/filmen.sql` | Database-opzet voor het filmen, met de stappen die je daarna in Supabase doet. |
 | `sw.js` | Offline-app. Cachenaam begint met `ufc-beheer-`, want de andere apps op hetzelfde domein ruimen `floorball-…` caches op. Hoog `CACHE` op bij elke wijziging aan html, js of css. |
 | `icons/` | UFC-logo met "BEHEER" eronder. |
