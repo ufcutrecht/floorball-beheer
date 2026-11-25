@@ -16,6 +16,7 @@ De oefeningen zelf staan niet hier maar in `ufcutrecht/floorball-training` (zie 
 | `shared/config.js` | Supabase-adres en publishable key, dezelfde als in floorball-training (mag openbaar). |
 | `shared/style.css` | Opmaak, in de kleuren van ufcutrecht.nl (grijze achtergrond, donkere kopbalk met blauwe streep, blauwe links, witte blokken); licht en donker via de variabelen in `:root`. |
 | `supabase/filmen.sql` | Database-opzet voor het filmen, met de stappen die je daarna in Supabase doet. |
+| `supabase/functions/filmpjes-opruimen/` | Edge Function die de filmpjes van verwerkte oefeningen wist (zie "Filmpjes opruimen"). Na een wijziging opnieuw uitrollen via de Supabase-connector. |
 | `sw.js` | Offline-app. Cachenaam begint met `ufc-beheer-`, want de andere apps op hetzelfde domein ruimen `floorball-…` caches op. Hoog `CACHE` op bij elke wijziging aan html, js of css. |
 | `icons/` | UFC-logo met "BEHEER" eronder. |
 
@@ -40,6 +41,21 @@ Zet de oefening daarna op verwerkt:
 
 Als reserve kan Remco met "Kopieer tekst" dezelfde beschrijving met links in de chat plakken.
 
+## Filmpjes opruimen
+
+Alleen als Remco daar apart om vraagt ("verwijder de filmpjes van de verwerkte oefeningen"), nooit
+vanzelf na het verwerken. Roep de Edge Function `filmpjes-opruimen` aan (bron in
+`supabase/functions/filmpjes-opruimen/`, uitgerold via de Supabase-connector):
+
+```
+curl -X POST https://agkhomwkcbvbdczqzzey.supabase.co/functions/v1/filmpjes-opruimen \
+  -H "Content-Type: application/json" -H "apikey: <publishable key uit shared/config.js>" -d '{}'
+```
+
+Met `-d '{"id":"<oefening-id>"}'` voor één oefening. De functie wist alleen filmpjes van oefeningen
+met status `verwerkt`, laat de beschrijving staan en zet in `data.filmpjesGewist` wat er gewist is.
+Meld Remco daarna hoeveel oefeningen, filmpjes en MB (`bytes`) er zijn opgeruimd.
+
 ## Testen
 
 Open de gewijzigde pagina's met `python3 -m http.server` en Playwright op ≈400 px en desktop,
@@ -49,4 +65,4 @@ verzoeken naar Supabase (`page.route("**/*.supabase.co/**", lambda r: r.abort())
 ## Niet doen
 
 - Geen sleutels of wachtwoorden in de code behalve de publishable key in `config.js`.
-- Geen service-role key gebruiken: alles loopt via de ingelogde gebruiker en de regels in Supabase.
+- Geen service-role key in de app of in de repository. De app loopt via de ingelogde gebruiker; alleen de Edge Function gebruikt de service-role key, die Supabase daar zelf aanlevert.
