@@ -124,8 +124,7 @@
   </form>
 
   <div class="btns">
-    <button type="button" class="primary hidden" id="submit">Klaar, insturen</button>
-    <button type="button" class="ghost" id="copy">Kopieer voor Claude</button>
+    <button type="button" class="primary" id="copy">Kopieer voor Claude</button>
     <button type="button" class="ghost small hidden" id="done">Markeer als verwerkt</button>
     <button type="button" class="danger small hidden" id="del">Oefening verwijderen</button>
   </div>
@@ -135,7 +134,7 @@
     <button type="button" class="ghost small" id="delNo">Annuleren</button>
   </div>
   <p class="status" id="status" role="status"></p>
-  <p class="muted" style="margin:0">"Kopieer voor Claude" kopieert de beschrijving met links naar de filmpjes (7 dagen geldig). Plak die in de chat met Claude.</p>
+  <p class="muted" style="margin:0">De knop kopieert de beschrijving met links naar de filmpjes (7 dagen geldig) en zet de oefening op "ingestuurd". Open daarna de chat met Claude, houd je vinger in het tekstvak en kies "Plak".</p>
   <details>
     <summary class="muted">Tekst bekijken</summary>
     <pre class="out" id="out"></pre>
@@ -297,18 +296,12 @@
 
   /* ---------- knoppen ---------- */
   function renderButtons(){
-    $('submit').classList.toggle('hidden',!online);
-    $('submit').textContent=cur.status==='concept'?'Klaar, insturen':(cur.status==='verwerkt'?'Verwerkt in de app':'Ingestuurd');
-    $('submit').disabled=busy>0||cur.status!=='concept';
+    $('copy').textContent=online&&cur.status==='concept'?'Insturen en kopiëren':'Kopieer voor Claude';
+    $('copy').disabled=busy>0;
     $('done').classList.toggle('hidden',!(online&&cur.id&&cur.status==='ingestuurd'));
     $('del').classList.toggle('hidden',!(online&&cur.id));
     $('newEx').disabled=busy>0;
   }
-  $('submit').addEventListener('click',function(){
-    if(!hasContent()){setStatus('Voeg eerst een filmpje of beschrijving toe.','err');return;}
-    cur.status='ingestuurd';renderButtons();
-    save(true).then(function(){setStatus('Ingestuurd. Tik op "Kopieer voor Claude" en plak de tekst in de chat.','ok');});
-  });
   $('done').addEventListener('click',function(){cur.status='verwerkt';renderButtons();save(true);});
   $('newEx').addEventListener('click',function(){
     if(busy)return;save(true);cur=blank();toForm();setStatus('');$('formTitle').scrollIntoView({behavior:'smooth',block:'start'});
@@ -350,18 +343,35 @@
     var m={};(res||[]).forEach(function(r){if(r&&r.signedURL&&r.path)m[r.path]=BASE+'/storage/v1'+(r.signedURL.charAt(0)==='/'?'':'/')+r.signedURL;});
     return m;
   }
-  $('copy').addEventListener('click',async function(){
-    var links=null;
-    if(online&&cur.videos.length){try{links=await signed(cur.videos.map(function(x){return x.path;}),7*24*3600);}catch(e){setStatus('Links naar de filmpjes maken lukte niet; de tekst zonder links is gekopieerd.','err');}}
-    var t=text(links);
-    if(!t){setStatus('Vul eerst iets in.','err');return;}
-    $('out').textContent=t;
+  /* Insturen en kopiëren. iPhone (Safari) staat kopiëren alleen toe direct na de tik,
+     dus de tekst gaat als belofte naar het klembord terwijl de links nog worden gemaakt. */
+  $('copy').addEventListener('click',function(){
+    if(!hasContent()){setStatus('Vul eerst iets in of voeg een filmpje toe.','err');return;}
+    var linkFail=false;
+    var made=(async function(){
+      if(online&&cur.status==='concept'){cur.status='ingestuurd';renderButtons();await save(true);}
+      var links=null;
+      if(online&&cur.videos.length){try{links=await signed(cur.videos.map(function(x){return x.path;}),7*24*3600);}catch(e){linkFail=true;}}
+      var t=text(links);$('out').textContent=t;return t;
+    })();
     function fallback(){
-      $('out').parentNode.open=true;var r=document.createRange();r.selectNodeContents($('out'));
-      var s=window.getSelection();s.removeAllRanges();s.addRange(r);
-      setStatus('Kopiëren lukte niet automatisch. De tekst is geselecteerd: kopieer hem zelf.');
+      made.then(function(){
+        $('out').parentNode.open=true;var r=document.createRange();r.selectNodeContents($('out'));
+        var s=window.getSelection();s.removeAllRanges();s.addRange(r);
+        setStatus('Kopiëren lukte niet automatisch. De tekst hieronder is geselecteerd: kies "Kopieer".');
+      });
     }
-    try{await navigator.clipboard.writeText(t);if(!links&&online&&cur.videos.length)return;setStatus('Gekopieerd. Plak de tekst in de chat met Claude.','ok');}catch(e){fallback();}
+    function ok(){setStatus(linkFail?'Gekopieerd, maar zonder links naar de filmpjes (die maken lukte niet).':'Gekopieerd. Plak de tekst in de chat met Claude.',linkFail?'err':'ok');}
+    try{
+      if(window.ClipboardItem&&navigator.clipboard&&navigator.clipboard.write){
+        var item=new ClipboardItem({'text/plain':made.then(function(t){return new Blob([t],{type:'text/plain'});})});
+        navigator.clipboard.write([item]).then(ok,function(){
+          made.then(function(t){return navigator.clipboard.writeText(t);}).then(ok,fallback);
+        });
+      }else{
+        made.then(function(t){return navigator.clipboard.writeText(t);}).then(ok,fallback);
+      }
+    }catch(e){fallback();}
   });
 
   /* ---------- filmpjes per opname ---------- */

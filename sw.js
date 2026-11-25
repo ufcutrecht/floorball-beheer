@@ -1,7 +1,7 @@
 /* Offline-app: eerst het netwerk (zodat je de nieuwste versie krijgt), anders de bewaarde kopie.
    De cachenaam begint met "ufc-beheer-": de trainersapp en gymles-app op hetzelfde domein
    ruimen alleen caches op die met "floorball-" beginnen. */
-const CACHE = "ufc-beheer-v3";
+const CACHE = "ufc-beheer-v4";
 const CORE = ["./", "index.html", "manifest.webmanifest", "filmen/", "shared/config.js", "shared/auth.js", "shared/style.css",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "icons/ufc-logo.png"];
 
