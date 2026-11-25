@@ -1,0 +1,543 @@
+<!doctype html>
+<!-- © 2026 UFC Utrecht. Alle rechten voorbehouden. Niet kopiëren zonder toestemming. -->
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Oefening filmen</title>
+<meta name="robots" content="noindex">
+<link rel="manifest" href="../manifest.webmanifest">
+<meta name="theme-color" content="#262935">
+<link rel="icon" href="../icons/icon-192.png">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="UFC Beheer">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<script src="../shared/config.js"></script>
+<script src="../shared/auth.js"></script>
+<link rel="stylesheet" href="../shared/style.css">
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a class="back" href="../">← Beheer</a>
+  <h1>Oefening filmen</h1>
+  <p>Film een oefening in de zaal en zet de filmpjes en de beschrijving er meteen bij. Daarna maakt Claude er een oefening met tekening van voor de trainersapp.</p>
+</header>
+
+<section aria-labelledby="h-login" id="loginBox">
+  <h2 id="h-login">Inloggen</h2>
+  <p id="loginOut" style="margin:0">Log in om filmpjes op te slaan. Zonder inloggen kun je de lijstjes gebruiken en de beschrijving kopiëren.</p>
+  <div data-login></div>
+</section>
+
+<section aria-labelledby="h-camera">
+  <h2 id="h-camera"><span class="no">1</span> Waar zet je de camera?</h2>
+  <svg class="court" viewBox="0 0 400 240" role="img" aria-label="Bovenaanzicht van een zaal met de beste camerapositie hoog in de hoek, een goede positie midden aan de lange zijde en te vermijden posities achter het doel en tegenover de ramen">
+    <rect x="30" y="30" width="340" height="180" rx="4" fill="var(--court)" stroke="var(--line)" stroke-width="2"/>
+    <rect x="40" y="40" width="320" height="160" fill="none" stroke="var(--court-line)" stroke-width="2"/>
+    <line x1="200" y1="40" x2="200" y2="200" stroke="var(--court-line)" stroke-width="2"/>
+    <circle cx="200" cy="120" r="22" fill="none" stroke="var(--court-line)" stroke-width="2"/>
+    <rect x="44" y="108" width="10" height="24" fill="none" stroke="var(--ink)" stroke-width="2"/>
+    <rect x="346" y="108" width="10" height="24" fill="none" stroke="var(--ink)" stroke-width="2"/>
+    <g stroke="var(--accent)" stroke-width="5" stroke-linecap="round">
+      <line x1="90" y1="30" x2="130" y2="30"/><line x1="180" y1="30" x2="220" y2="30"/><line x1="270" y1="30" x2="310" y2="30"/>
+    </g>
+    <text x="200" y="20" text-anchor="middle" font-size="12" fill="var(--muted)" font-family="var(--body)">ramen</text>
+    <path d="M14 226 L120 120 M14 226 L200 196" stroke="var(--good)" stroke-width="1.5" stroke-dasharray="4 4" fill="none"/>
+    <path d="M14 226 L60 40 L370 40 L370 200 L170 214 Z" fill="var(--good)" opacity=".08"/>
+    <circle cx="14" cy="226" r="9" fill="var(--good)"/>
+    <text x="28" y="236" font-size="12" fill="var(--good)" font-weight="700" font-family="var(--body)">hoog in de hoek</text>
+    <circle cx="200" cy="222" r="8" fill="var(--mark)"/>
+    <text x="214" y="236" font-size="12" fill="var(--ink)" font-family="var(--body)">midden lange zijde, hoog</text>
+    <g stroke="var(--bad)" stroke-width="3" stroke-linecap="round">
+      <line x1="380" y1="112" x2="392" y2="124"/><line x1="392" y1="112" x2="380" y2="124"/>
+      <line x1="194" y1="46" x2="206" y2="58"/><line x1="206" y1="46" x2="194" y2="58"/>
+    </g>
+  </svg>
+  <ul class="legend">
+    <li><span class="dot" style="background:var(--good)"></span>Beste plek</li>
+    <li><span class="dot" style="background:var(--mark)"></span>Goed</li>
+    <li><span class="dot" style="background:var(--bad)"></span>Vermijden: achter het doel, tegen het licht in</li>
+  </ul>
+  <ul class="tips">
+    <li><b>Hoog.</b> Tribune of balkon, of de telefoon bovenin het wandrek. Van boven zie je de looplijnen zoals in de tekening.</li>
+    <li><b>Schuin over de zaal</b>, vanuit een hoek, zodat het hele speelveld in beeld is.</li>
+    <li><b>Liggend en stil.</b> Statief of klem, niet meebewegen en niet inzoomen.</li>
+    <li><b>Niet tegenover de ramen</b>, anders worden de spelers donkere silhouetten.</li>
+  </ul>
+</section>
+
+<section aria-labelledby="h-voor">
+  <h2 id="h-voor"><span class="no">2</span> Voor je begint</h2>
+  <ul class="checks">
+    <li><label><input type="checkbox" id="v1"><span class="t"><span>Video op 1080p, niet 4K</span><small>iPhone: Instellingen › Camera › Video opnemen › 1080p HD bij 30 fps. Scheelt opslag en uploadtijd.</small></span></label></li>
+    <li><label><input type="checkbox" id="v2"><span class="t"><span>Statief, klem of tape om de telefoon vast te zetten</span></span></label></li>
+    <li><label><input type="checkbox" id="v3"><span class="t"><span>Hesjes in twee kleuren</span><small>Dan zijn teams en rollen op de beelden uit elkaar te houden.</small></span></label></li>
+    <li><label><input type="checkbox" id="v4"><span class="t"><span>Hele veld in beeld</span><small>Maak een testopname van 5 seconden en kijk hem terug.</small></span></label></li>
+  </ul>
+</section>
+
+<section aria-labelledby="h-shots">
+  <h2 id="h-shots"><span class="no">3</span> Wat je filmt</h2>
+  <p class="banner" id="offline">Log bovenaan in om filmpjes toe te voegen. Zonder inloggen vink je de opnames zelf af.</p>
+
+  <div id="exWrap" class="hidden" style="display:grid;gap:10px">
+    <div class="btns" style="justify-content:space-between">
+      <h3>Jouw oefeningen</h3>
+      <button type="button" class="ghost small" id="newEx">Nieuwe oefening</button>
+    </div>
+    <ul class="list" id="exList"></ul>
+    <p class="muted" id="exEmpty" style="margin:0">Nog geen oefeningen opgeslagen. Begin hieronder met de eerste.</p>
+  </div>
+
+  <div class="curbar">
+    <h3 id="formTitle">Nieuwe oefening</h3>
+    <span class="muted" id="progress" aria-live="polite"></span>
+  </div>
+  <p class="muted" style="margin:0">Maak per opname een kort filmpje, liefst korter dan anderhalve minuut. Een opname is afgevinkt zodra het filmpje erin staat. Op de iPhone kies je "Neem video op" of een filmpje uit je bibliotheek. Filmpjes groter dan 50 MB worden eerst verkleind; houd het scherm dan aan.</p>
+  <ol class="shots" id="shots"></ol>
+</section>
+
+<section aria-labelledby="h-oef">
+  <h2 id="h-oef"><span class="no">4</span> Beschrijving</h2>
+  <form id="f" novalidate>
+    <fieldset class="field picks" id="app"><legend>Leeftijdsgroepen</legend><small>Kies er één of meer</small></fieldset>
+    <div class="field"><label for="naam">Naam van de oefening</label><input type="text" id="naam" placeholder="bijv. Driehoek passen"></div>
+    <div class="row">
+      <div class="field"><label for="spelers">Spelers en groepjes</label><input type="text" id="spelers" placeholder="bijv. 12 spelers, 3 groepjes van 4"></div>
+      <div class="field"><label for="veld">Veld</label><input type="text" id="veld" placeholder="bijv. halve zaal"></div>
+    </div>
+    <div class="field"><label for="materiaal">Materiaal</label><input type="text" id="materiaal" placeholder="bijv. 6 pionnen, 2 doeltjes, 1 bal per groepje"></div>
+    <div class="field"><label for="opstelling">Opstelling</label><textarea id="opstelling" placeholder="Waar staan de pionnen, doeltjes en spelers bij de start?"></textarea></div>
+    <div class="field"><label for="verloop">Verloop</label><small>Eén stap per regel</small><textarea id="verloop" placeholder="A passt naar B&#10;B kaatst terug&#10;A schiet op doel"></textarea></div>
+    <div class="field"><label for="wissel">Doorwisselen</label><input type="text" id="wissel" placeholder="bijv. na je beurt aansluiten bij de volgende pion"></div>
+    <div class="field"><label for="regels">Regels en scoren</label><textarea id="regels"></textarea></div>
+    <div class="field"><label for="varianten">Varianten</label><small>Eén per regel</small><textarea id="varianten"></textarea></div>
+    <div class="field"><label for="punten">Aandachtspunten</label><small>2 of 3, één per regel</small><textarea id="punten" placeholder="Stick laag bij het aannemen&#10;Kijk op voordat je passt"></textarea></div>
+  </form>
+
+  <div class="btns">
+    <button type="button" class="primary hidden" id="submit">Klaar, insturen</button>
+    <button type="button" class="ghost" id="copy">Kopieer voor Claude</button>
+    <button type="button" class="ghost small hidden" id="done">Markeer als verwerkt</button>
+    <button type="button" class="danger small hidden" id="del">Oefening verwijderen</button>
+  </div>
+  <div class="btns hidden" id="delConfirm">
+    <span>Oefening en filmpjes definitief verwijderen?</span>
+    <button type="button" class="danger small" id="delYes">Ja, verwijderen</button>
+    <button type="button" class="ghost small" id="delNo">Annuleren</button>
+  </div>
+  <p class="status" id="status" role="status"></p>
+  <p class="muted" style="margin:0">"Kopieer voor Claude" kopieert de beschrijving met links naar de filmpjes (7 dagen geldig). Plak die in de chat met Claude.</p>
+  <details>
+    <summary class="muted">Tekst bekijken</summary>
+    <pre class="out" id="out"></pre>
+  </details>
+</section>
+</div>
+<div class="stage" id="stage" aria-hidden="true"></div>
+
+<script>
+(function(){
+  "use strict";
+  var BASE=FBAuth.base,KEY=FBAuth.key,api=FBAuth.api,token=FBAuth.token;
+  var BUCKET='filmpjes',TABLE='film_oefeningen';
+  var LKEY='ufc-beheer-filmen';
+  var GROUPS=['O10','O12','O14','O18','Gymles groep 3–6','Gymles groep 7–8'];
+  var FIELDS=['app','naam','spelers','veld','materiaal','opstelling','verloop','wissel','regels','varianten','punten'];
+  var SLOTS=[
+    {key:'Lege opstelling',tag:'5–10 sec',title:'De lege opstelling',hint:'Pionnen, doeltjes, startplekken, nog zonder spelers. Zeg hoe groot het veld is, bijvoorbeeld "halve zaal".'},
+    {key:'Rustige ronde',tag:'± 30 sec',title:'Eén rustige ronde',hint:'Wie start waar, waar gaat de bal heen, waar sluit je na je beurt aan.'},
+    {key:'Op tempo',tag:'30–90 sec',title:'De oefening op tempo',hint:'Zoals hij echt gespeeld wordt, met doorwisselen.'},
+    {key:'Variant',tag:'per variant',title:'Varianten',hint:'Elke variant als eigen filmpje: moeilijker of makkelijker, extra regel, andere afwerking. Niet verplicht.',multi:true}
+  ];
+  var MAX=50*1024*1024,TARGET=44*1024*1024;
+  var $=function(id){return document.getElementById(id);};
+  function slotOf(l){return SLOTS.some(function(s){return s.key===l;})?l:'Variant';}
+  var ls={get:function(k,d){try{var v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},
+          set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}},
+          del:function(k){try{localStorage.removeItem(k);}catch(e){}}};
+  var local=ls.get(LKEY,{})||{};
+  function saveLocal(){ls.set(LKEY,local);}
+
+  /* ---------- afvinklijst "Voor je begint" ---------- */
+  Array.prototype.slice.call(document.querySelectorAll('.checks input')).forEach(function(c){
+    c.checked=!!(local.c&&local.c[c.id]);
+    c.addEventListener('change',function(){local.c=local.c||{};local.c[c.id]=c.checked;saveLocal();});
+  });
+
+  /* ---------- inloggen (shared/auth.js) ---------- */
+  var online=false;
+  function signedIn(){
+    online=true;
+    $('loginOut').classList.add('hidden');$('offline').classList.add('hidden');$('exWrap').classList.remove('hidden');
+    if(local.f&&!cur.id&&FIELDS.some(function(k){return (local.f[k]||'').trim();})){save(true).then(function(){local.f=null;saveLocal();});}
+    loadList();renderAll();
+  }
+  function signedOut(){
+    online=false;
+    $('loginOut').classList.remove('hidden');$('offline').classList.remove('hidden');$('exWrap').classList.add('hidden');
+    renderAll();
+  }
+  FBAuth.onChange(function(on){if(on&&!online)signedIn();else if(!on&&online)signedOut();});
+
+  /* ---------- leeftijdsgroepen: meer tegelijk kiezen ---------- */
+  (function(){
+    var box=$('app');
+    GROUPS.forEach(function(g,i){
+      var l=document.createElement('label');l.className='pick';
+      var c=document.createElement('input');c.type='checkbox';c.value=g;c.id='grp'+i;
+      l.appendChild(c);l.appendChild(document.createTextNode(g));box.appendChild(l);
+    });
+  })();
+  function getVal(k){
+    if(k!=='app')return $(k).value;
+    return Array.prototype.slice.call($('app').querySelectorAll('input:checked')).map(function(c){return c.value;}).join(', ');
+  }
+  function setVal(k,val){
+    if(k!=='app'){$(k).value=val||'';return;}
+    var set=(val||'').split(/\s*,\s*/);
+    Array.prototype.forEach.call($('app').querySelectorAll('input'),function(c){c.checked=set.indexOf(c.value)>=0;});
+  }
+
+  /* ---------- huidige oefening ---------- */
+  var cur=blank(),exercises=[],busy=0,urls={};
+  function blank(){return {id:null,status:'concept',videos:[],createdAt:null};}
+  function newId(){var r=(crypto.randomUUID?crypto.randomUUID():String(Math.random()).slice(2)+Date.now()).replace(/-/g,'').slice(0,8);return 'oef-'+new Date().toISOString().slice(0,10)+'-'+r;}
+  function v(id){return $(id).value.trim();}
+  function fromForm(){FIELDS.forEach(function(k){cur[k]=getVal(k);});}
+  function hasContent(){fromForm();return cur.videos.length>0||FIELDS.some(function(k){return (cur[k]||'').trim();});}
+  function toForm(){FIELDS.forEach(function(k){setVal(k,cur[k]);});renderAll();}
+  function title(){return v('naam')||(cur.id?'Oefening zonder naam':'Nieuwe oefening');}
+  function renderAll(){$('formTitle').textContent=title();renderShots();renderButtons();renderText();renderList();}
+
+  var queue=Promise.resolve(),timer=null;
+  function setStatus(t,k){var s=$('status');s.textContent=t||'';s.className='status'+(k?' '+k:'');}
+  function row(){
+    var d={videos:cur.videos.map(function(x){return {path:x.path,label:x.label,name:x.name||'',sizeBytes:x.sizeBytes||0,seconds:x.seconds||0,type:x.type||''};})};
+    FIELDS.forEach(function(k){d[k]=cur[k]||'';});
+    return {id:cur.id,data:d,status:cur.status,updated_at:new Date().toISOString()};
+  }
+  function save(now){
+    fromForm();
+    if(!online){local.f={};FIELDS.forEach(function(k){local.f[k]=cur[k];});saveLocal();return Promise.resolve();}
+    clearTimeout(timer);
+    if(!now){timer=setTimeout(function(){save(true);},1200);return Promise.resolve();}
+    if(!hasContent())return Promise.resolve();
+    if(!cur.id)cur.id=newId();
+    var body=JSON.stringify(row());
+    setStatus('Opslaan…');
+    queue=queue.then(function(){
+      return api('/rest/v1/'+TABLE+'?on_conflict=id',{method:'POST',headers:{'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=minimal'},body:body});
+    }).then(function(){setStatus('Opgeslagen','ok');loadList();},function(e){setStatus(e.message&&/uitgelogd/.test(e.message)?e.message:'Opslaan mislukt. Controleer je verbinding en probeer het opnieuw.','err');});
+    return queue;
+  }
+  FIELDS.forEach(function(k){
+    $(k).addEventListener('input',function(){renderText();save(false);});
+    $(k).addEventListener('change',function(){renderText();save(false);});
+  });
+  $('naam').addEventListener('input',function(){$('formTitle').textContent=title();});
+
+  /* ---------- lijst ---------- */
+  var listBusy=false;
+  async function loadList(){
+    if(!online||listBusy)return;listBusy=true;
+    try{
+      var rows=await api('/rest/v1/'+TABLE+'?select=id,data,status,updated_at&order=updated_at.desc&limit=100');
+      exercises=(rows||[]).map(function(r){var d=r.data||{};var o={id:r.id,status:r.status,updatedAt:r.updated_at,videos:Array.isArray(d.videos)?d.videos:[]};FIELDS.forEach(function(k){o[k]=typeof d[k]==='string'?d[k]:'';});return o;});
+      var mine=exercises.filter(function(e){return e.id===cur.id;})[0];
+      if(mine&&mine.status!==cur.status){cur.status=mine.status;renderButtons();}
+      renderList();
+    }catch(e){setStatus('Je oefeningen konden niet geladen worden.','err');}
+    listBusy=false;
+  }
+  function fmtDate(t){try{return new Date(t).toLocaleDateString('nl-NL',{day:'numeric',month:'short'});}catch(e){return '';}}
+  function renderList(){
+    var ul=$('exList');ul.textContent='';
+    $('exEmpty').classList.toggle('hidden',exercises.length>0);
+    exercises.forEach(function(e){
+      var li=document.createElement('li');li.className='ex'+(e.id===cur.id?' cur':'');
+      var info=document.createElement('div');info.className='info';
+      var n=document.createElement('span');n.className='name';n.textContent=e.naam||'Oefening zonder naam';
+      var m=document.createElement('span');m.className='muted';var vc=e.videos.length;
+      m.textContent=[e.app,vc+(vc===1?' filmpje':' filmpjes'),fmtDate(e.updatedAt)].filter(Boolean).join(' · ');
+      info.appendChild(n);info.appendChild(m);
+      var right=document.createElement('div');right.className='btns';right.style.gap='8px';
+      var st=['concept','ingestuurd','verwerkt'].indexOf(e.status)>=0?e.status:'concept';
+      var chip=document.createElement('span');chip.className='chip '+st;chip.textContent=st;right.appendChild(chip);
+      if(e.id!==cur.id){
+        var b=document.createElement('button');b.type='button';b.className='ghost small';b.textContent='Openen';b.disabled=busy>0;
+        b.addEventListener('click',function(){
+          if(busy)return;save(true);
+          cur=JSON.parse(JSON.stringify(e));toForm();setStatus('');
+          $('formTitle').scrollIntoView({behavior:'smooth',block:'start'});
+        });
+        right.appendChild(b);
+      }
+      li.appendChild(info);li.appendChild(right);ul.appendChild(li);
+    });
+  }
+
+  /* ---------- knoppen ---------- */
+  function renderButtons(){
+    $('submit').classList.toggle('hidden',!online);
+    $('submit').textContent=cur.status==='concept'?'Klaar, insturen':(cur.status==='verwerkt'?'Verwerkt in de app':'Ingestuurd');
+    $('submit').disabled=busy>0||cur.status!=='concept';
+    $('done').classList.toggle('hidden',!(online&&cur.id&&cur.status==='ingestuurd'));
+    $('del').classList.toggle('hidden',!(online&&cur.id));
+    $('newEx').disabled=busy>0;
+  }
+  $('submit').addEventListener('click',function(){
+    if(!hasContent()){setStatus('Voeg eerst een filmpje of beschrijving toe.','err');return;}
+    cur.status='ingestuurd';renderButtons();
+    save(true).then(function(){setStatus('Ingestuurd. Tik op "Kopieer voor Claude" en plak de tekst in de chat.','ok');});
+  });
+  $('done').addEventListener('click',function(){cur.status='verwerkt';renderButtons();save(true);});
+  $('newEx').addEventListener('click',function(){
+    if(busy)return;save(true);cur=blank();toForm();setStatus('');$('formTitle').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  $('del').addEventListener('click',function(){$('delConfirm').classList.remove('hidden');$('delNo').focus();});
+  $('delNo').addEventListener('click',function(){$('delConfirm').classList.add('hidden');});
+  $('delYes').addEventListener('click',async function(){
+    $('delConfirm').classList.add('hidden');
+    if(!cur.id||!online)return;
+    try{
+      var paths=cur.videos.map(function(x){return x.path;}).filter(Boolean);
+      if(paths.length)await api('/storage/v1/object/'+BUCKET,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({prefixes:paths})});
+      await api('/rest/v1/'+TABLE+'?id=eq.'+encodeURIComponent(cur.id),{method:'DELETE'});
+      cur=blank();toForm();setStatus('Oefening verwijderd','ok');loadList();
+    }catch(e){setStatus('Verwijderen mislukt. Probeer het opnieuw.','err');}
+  });
+
+  /* ---------- tekst ---------- */
+  function lines(s,num){return (s||'').split(/\n+/).map(function(x){return x.trim();}).filter(Boolean).map(function(x,i){return (num?(i+1)+'. ':'- ')+x;}).join('\n');}
+  function text(links){
+    fromForm();
+    var out=['OEFENING VOOR DE APP'];
+    function one(l,val){if(val&&val.trim())out.push(l+': '+val.trim());}
+    function add(l,val){if(val&&val.trim())out.push('',l+':',val.trim());}
+    one('Leeftijdsgroepen',cur.app);one('Naam',cur.naam);one('Spelers',cur.spelers);one('Veld',cur.veld);one('Materiaal',cur.materiaal);
+    add('Opstelling',cur.opstelling);add('Verloop',lines(cur.verloop,true));add('Doorwisselen',cur.wissel);
+    add('Regels en scoren',cur.regels);add('Varianten',lines(cur.varianten));add('Aandachtspunten',lines(cur.punten));
+    if(cur.videos.length)add('Filmpjes',cur.videos.map(function(x){
+      var s='- '+x.label+(x.seconds?' ('+Math.round(x.seconds)+' sec)':'');
+      if(links&&links[x.path])s+='\n  '+links[x.path];
+      return s;}).join('\n'));
+    if(cur.id&&online)out.push('','Opgeslagen als: '+cur.id);
+    return out.length>1?out.join('\n'):'';
+  }
+  function renderText(){$('out').textContent=text()||'Hier verschijnt de tekst zodra je iets invult.';}
+  async function signed(paths,secs){
+    if(!paths.length)return {};
+    var res=await api('/storage/v1/object/sign/'+BUCKET,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({expiresIn:secs,paths:paths})});
+    var m={};(res||[]).forEach(function(r){if(r&&r.signedURL&&r.path)m[r.path]=BASE+'/storage/v1'+(r.signedURL.charAt(0)==='/'?'':'/')+r.signedURL;});
+    return m;
+  }
+  $('copy').addEventListener('click',async function(){
+    var links=null;
+    if(online&&cur.videos.length){try{links=await signed(cur.videos.map(function(x){return x.path;}),7*24*3600);}catch(e){setStatus('Links naar de filmpjes maken lukte niet; de tekst zonder links is gekopieerd.','err');}}
+    var t=text(links);
+    if(!t){setStatus('Vul eerst iets in.','err');return;}
+    $('out').textContent=t;
+    function fallback(){
+      $('out').parentNode.open=true;var r=document.createRange();r.selectNodeContents($('out'));
+      var s=window.getSelection();s.removeAllRanges();s.addRange(r);
+      setStatus('Kopiëren lukte niet automatisch. De tekst is geselecteerd: kopieer hem zelf.');
+    }
+    try{await navigator.clipboard.writeText(t);if(!links&&online&&cur.videos.length)return;setStatus('Gekopieerd. Plak de tekst in de chat met Claude.','ok');}catch(e){fallback();}
+  });
+
+  /* ---------- filmpjes per opname ---------- */
+  var pending=[];
+  var CHECK='<svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg>';
+  async function refreshUrls(){
+    var need=cur.videos.map(function(x){return x.path;}).filter(function(p){return p&&!urls[p];});
+    if(!need.length||!online)return;
+    try{var m=await signed(need,6*3600);Object.keys(m).forEach(function(k){urls[k]=m[k];});renderShots();}catch(e){}
+  }
+  function videoItem(x){
+    var li=document.createElement('li');li.className='vid';
+    if(urls[x.path]&&/^https:\/\//.test(urls[x.path])){
+      var vid=document.createElement('video');vid.src=urls[x.path];vid.controls=true;vid.preload='metadata';vid.setAttribute('playsinline','');li.appendChild(vid);
+    }else{var ph=document.createElement('div');ph.className='ph';ph.textContent=x.name||'Filmpje';li.appendChild(ph);}
+    var meta=document.createElement('div');meta.className='meta';
+    var info=document.createElement('span');info.className='muted';
+    info.textContent=[x.seconds?Math.round(x.seconds)+' sec':'',x.sizeBytes?(x.sizeBytes/1048576).toFixed(1)+' MB':''].filter(Boolean).join(' · ')||'Filmpje';
+    var rm=document.createElement('button');rm.type='button';rm.className='danger small';rm.textContent='Verwijderen';
+    rm.addEventListener('click',function(){
+      if(rm.dataset.sure!=='1'){rm.dataset.sure='1';rm.textContent='Zeker? Tik nogmaals';return;}
+      var k=cur.videos.indexOf(x);if(k>=0)cur.videos.splice(k,1);
+      save(true);
+      api('/storage/v1/object/'+BUCKET,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({prefixes:[x.path]})}).catch(function(){});
+      renderShots();renderText();
+    });
+    var r=document.createElement('div');r.className='btns';r.appendChild(rm);
+    meta.appendChild(info);meta.appendChild(r);li.appendChild(meta);
+    return li;
+  }
+  function renderShots(){
+    var ol=$('shots');ol.textContent='';var doneMain=0,variants=0;
+    SLOTS.forEach(function(s,si){
+      var vids=cur.videos.filter(function(x){return slotOf(x.label)===s.key;});
+      var pend=pending.filter(function(p){return p.slot===s.key;});
+      var mk='shot'+si,done=online?vids.length>0:!!(local.c&&local.c[mk]);
+      if(s.multi)variants=online?vids.length:(done?1:0);else if(done)doneMain++;
+      var li=document.createElement('li');li.className='shot'+(done?' done':'');
+      var head=document.createElement('div');head.className='shot-head';
+      if(online){var tk=document.createElement('span');tk.className='tick';tk.setAttribute('aria-hidden','true');tk.innerHTML=CHECK;head.appendChild(tk);}
+      else{
+        var cb=document.createElement('input');cb.type='checkbox';cb.id='tick-'+si;cb.checked=done;
+        cb.addEventListener('change',function(){local.c=local.c||{};local.c[mk]=cb.checked;saveLocal();renderShots();});
+        head.appendChild(cb);
+      }
+      var t=document.createElement(online?'div':'label');t.className='t';if(!online)t.htmlFor='tick-'+si;
+      var tag=document.createElement('span');tag.className='tag';tag.textContent=s.tag;
+      var ti=document.createElement('span');ti.className='title';ti.textContent=s.title+(online&&done?(s.multi?' ('+vids.length+')':' · klaar'):'');
+      var hi=document.createElement('small');hi.textContent=s.hint;
+      t.appendChild(tag);t.appendChild(ti);t.appendChild(hi);head.appendChild(t);li.appendChild(head);
+      if(online){
+        if(vids.length||pend.length){
+          var ul=document.createElement('ul');ul.className='vids';
+          vids.forEach(function(x){ul.appendChild(videoItem(x));});
+          pend.forEach(function(p){ul.appendChild(p.el);});
+          li.appendChild(ul);
+        }
+        var lab=document.createElement('label');lab.className='filebtn'+(done&&!s.multi?' again':'');
+        lab.appendChild(document.createTextNode(s.multi?(vids.length?'Nog een variant':'Variant opnemen of kiezen'):(done?'Ander filmpje toevoegen':'Opnemen of kiezen')));
+        var inp=document.createElement('input');inp.type='file';inp.accept='video/*';
+        inp.setAttribute('aria-label',s.title+': filmpje opnemen of kiezen');
+        inp.addEventListener('change',function(ev){addFiles(ev,s.key);});
+        lab.appendChild(inp);
+        var rw=document.createElement('div');rw.className='btns';rw.appendChild(lab);li.appendChild(rw);
+      }
+      ol.appendChild(li);
+    });
+    $('progress').textContent=doneMain+' van 3 opnames klaar'+(variants?', '+variants+(variants===1?' variant':' varianten'):'');
+    refreshUrls();
+  }
+
+  function pendingItem(name){
+    var li=document.createElement('li');li.className='vid';
+    var ph=document.createElement('div');ph.className='ph';ph.textContent=name;
+    var meta=document.createElement('div');meta.className='meta';
+    var t=document.createElement('span');
+    var bar=document.createElement('div');bar.className='bar';var fill=document.createElement('i');bar.appendChild(fill);
+    meta.appendChild(t);meta.appendChild(bar);li.appendChild(ph);li.appendChild(meta);
+    var p={el:li,set:function(msg,frac,err){t.textContent=msg;t.className=err?'status err':'';fill.style.width=Math.round((frac||0)*100)+'%';bar.classList.toggle('hidden',!!err);}};
+    p.set('Wachten…',0);return p;
+  }
+  function loadVideo(file){
+    return new Promise(function(res,rej){
+      var el=document.createElement('video');
+      el.muted=true;el.playsInline=true;el.setAttribute('playsinline','');el.setAttribute('muted','');el.preload='auto';
+      el.src=URL.createObjectURL(file);$('stage').appendChild(el);
+      var done=false;
+      el.addEventListener('loadedmetadata',function(){if(!done){done=true;res(el);}});
+      el.addEventListener('error',function(){if(!done){done=true;cleanup(el);rej(new Error('Dit filmpje kan de browser niet openen.'));}});
+      setTimeout(function(){if(!done){done=true;cleanup(el);rej(new Error('Het filmpje laadt niet. Probeer het opnieuw.'));}},20000);
+    });
+  }
+  function cleanup(el){try{el.pause();URL.revokeObjectURL(el.src);el.removeAttribute('src');el.load();el.remove();}catch(e){}}
+  function seek(el,t){return new Promise(function(res){var h=function(){el.removeEventListener('seeked',h);res();};el.addEventListener('seeked',h);el.currentTime=t;setTimeout(h,4000);});}
+
+  /* Verkleinen: afspelen op een canvas en opnieuw opnemen (zonder geluid) */
+  async function shrink(el,onp){
+    var dur=el.duration;
+    if(!isFinite(dur)||dur<=0)throw new Error('De lengte van het filmpje is onbekend.');
+    if(dur>300)throw new Error('Dit filmpje is langer dan 5 minuten. Film kortere stukken.');
+    var fail='Verkleinen lukt niet in deze browser. Film een korter stuk (onder 50 MB).';
+    if(!window.MediaRecorder)throw new Error(fail);
+    var types=['video/mp4;codecs=avc1.42E01E','video/mp4','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];
+    var mime=types.filter(function(t){try{return MediaRecorder.isTypeSupported(t);}catch(e){return false;}})[0];
+    if(!mime)throw new Error(fail);
+    var long=Math.max(el.videoWidth,el.videoHeight)||1280,sc=Math.min(1,1280/long);
+    var w=Math.round((el.videoWidth||1280)*sc/2)*2,h=Math.round((el.videoHeight||720)*sc/2)*2;
+    var c=document.createElement('canvas');c.width=w;c.height=h;var ctx=c.getContext('2d');
+    if(!c.captureStream)throw new Error(fail);
+    var bps=Math.max(600000,Math.min(4000000,Math.floor(TARGET*8/dur*0.85)));
+    var stream=c.captureStream(30);
+    var rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:bps});
+    var chunks=[];rec.ondataavailable=function(e){if(e.data&&e.data.size)chunks.push(e.data);};
+    try{await el.play();el.pause();}catch(e){}
+    await seek(el,0);ctx.drawImage(el,0,0,w,h);
+    var stopped=new Promise(function(r){rec.onstop=r;}),ended=new Promise(function(r){el.onended=r;});
+    rec.start(1000);await el.play();
+    var draw=function(){ctx.drawImage(el,0,0,w,h);onp(Math.min(1,el.currentTime/dur));
+      if(!el.ended){if(el.requestVideoFrameCallback)el.requestVideoFrameCallback(draw);else requestAnimationFrame(draw);}};
+    draw();await ended;ctx.drawImage(el,0,0,w,h);
+    await new Promise(function(r){setTimeout(r,300);});
+    rec.stop();await stopped;stream.getTracks().forEach(function(t){t.stop();});
+    return new Blob(chunks,{type:mime.indexOf('video/mp4')===0?'video/mp4':'video/webm'});
+  }
+
+  function upload(path,blob,type,onp){
+    return token().then(function(tk){return new Promise(function(res,rej){
+      var x=new XMLHttpRequest();
+      x.open('POST',BASE+'/storage/v1/object/'+BUCKET+'/'+path);
+      x.setRequestHeader('apikey',KEY);x.setRequestHeader('Authorization','Bearer '+tk);
+      x.setRequestHeader('Content-Type',type);x.setRequestHeader('x-upsert','false');
+      x.upload.onprogress=function(e){if(e.lengthComputable)onp(e.loaded/e.total);};
+      x.onload=function(){if(x.status>=200&&x.status<300)res();else rej(Object.assign(new Error(x.responseText||'upload '+x.status),{status:x.status}));};
+      x.onerror=function(){rej(new Error('Uploaden mislukt. Controleer je verbinding.'));};
+      x.send(blob);
+    });});
+  }
+  async function handle(file,slot,p){
+    var el=await loadVideo(file);
+    try{
+      var dur=el.duration||0,type=(file.type||'').toLowerCase(),name=(file.name||'').toLowerCase();
+      var vtype=/webm/.test(type)||/\.webm$/.test(name)?'video/webm':(/quicktime/.test(type)||/\.mov$/.test(name)?'video/quicktime':'video/mp4');
+      var known=/mp4|quicktime|webm|m4v/.test(type)||/\.(mp4|mov|m4v|webm)$/.test(name);
+      var blob=file;
+      if(!known||file.size>MAX*0.96){
+        p.set('Verkleinen… houd het scherm aan',0);
+        blob=await shrink(el,function(f){p.set('Verkleinen… '+Math.round(f*100)+'%, houd het scherm aan',f);});
+        vtype=blob.type;
+        if(blob.size>MAX)throw new Error('Ook verkleind is dit filmpje groter dan 50 MB. Film een korter stuk.');
+      }
+      var ext=vtype==='video/webm'?'webm':(vtype==='video/quicktime'?'mov':'mp4');
+      var slug=slot.toLowerCase().replace(/[^a-z]+/g,'-');
+      var path=cur.id+'/'+Date.now()+'-'+slug+'.'+ext;
+      p.set('Uploaden… 0%',0);
+      await upload(path,blob,vtype,function(f){p.set('Uploaden… '+Math.round(f*100)+'%',f);});
+      return {path:path,label:slot,name:file.name||'',sizeBytes:blob.size,seconds:dur,type:vtype};
+    }finally{cleanup(el);}
+  }
+  function errText(e){
+    if(e&&e.status===413)return 'Dit filmpje is te groot (meer dan 50 MB). Film een korter stuk.';
+    if(e&&(e.status===400||e.status===415)&&/mime|type/i.test(e.message||''))return 'Dit soort bestand wordt niet geaccepteerd.';
+    if(e&&e.status)return 'Uploaden mislukt ('+e.status+'). Probeer het opnieuw.';
+    return (e&&e.message)||'Er ging iets mis. Probeer het opnieuw.';
+  }
+  async function addFiles(ev,slot){
+    var files=Array.prototype.slice.call(ev.target.files||[]);ev.target.value='';
+    if(!files.length||!online)return;
+    fromForm();
+    if(!cur.id)cur.id=newId();
+    var items=files.map(function(f){var p=pendingItem(f.name||'filmpje');p.slot=slot;pending.push(p);return p;});
+    busy++;renderButtons();renderList();renderShots();
+    for(var i=0;i<files.length;i++){
+      var p=items[i];
+      try{
+        var r=await handle(files[i],slot,p);
+        cur.videos.push(r);pending.splice(pending.indexOf(p),1);
+        await save(true);renderShots();renderText();
+      }catch(e){
+        p.set(errText(e),0,true);
+        (function(pp){setTimeout(function(){var k=pending.indexOf(pp);if(k>=0){pending.splice(k,1);renderShots();}},12000);})(p);
+      }
+    }
+    busy--;renderButtons();renderList();
+  }
+
+  /* ---------- opstarten ---------- */
+  if(local.f)FIELDS.forEach(function(k){cur[k]=local.f[k]||'';});
+  toForm();
+  if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("../sw.js",{scope:"../"}).catch(function(){});
+})();
+</script>
+</body>
+</html>

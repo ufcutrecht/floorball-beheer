@@ -1,0 +1,71 @@
+<!doctype html>
+<!-- © 2026 UFC Utrecht. Alle rechten voorbehouden. Niet kopiëren zonder toestemming. -->
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>UFC Beheer</title>
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#262935">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="UFC Beheer">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<script src="shared/config.js"></script>
+<script src="shared/auth.js"></script>
+<link rel="stylesheet" href="shared/style.css">
+<style>
+.top{display:flex;gap:16px;align-items:center;justify-content:space-between}
+.top img{height:clamp(84px,20vw,120px);width:auto;flex:none}
+.eyebrow{font:600 15px var(--display);text-transform:uppercase;letter-spacing:.12em;color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="top">
+    <div style="display:grid;gap:6px">
+      <span class="eyebrow">UFC Utrecht · floorball-apps</span>
+      <h1>Beheer</h1>
+      <p>Achter de schermen van de trainersapp en de gymles-app.</p>
+    </div>
+    <img src="icons/ufc-logo.png" alt="UFC Utrecht">
+  </div>
+</header>
+
+<section aria-labelledby="h-login">
+  <h2 id="h-login">Inloggen</h2>
+  <div data-login></div>
+</section>
+
+<ul class="tiles">
+  <li><a class="tile" href="filmen/"><b>Oefening filmen</b><span>Film een oefening in de zaal en zet filmpjes en beschrijving klaar voor Claude.</span></a></li>
+</ul>
+
+<section aria-labelledby="h-links">
+  <h2 id="h-links">Snel naar</h2>
+  <ul class="links">
+    <li><a href="https://ufcutrecht.github.io/floorball-training/overzicht/">Scores en toelichtingen</a></li>
+    <li><a href="https://ufcutrecht.github.io/floorball-training/">Trainersapp</a></li>
+    <li><a href="https://ufcutrecht.github.io/floorball-gymles/">Gymles-app</a></li>
+  </ul>
+  <h3>Reviewlijsten</h3>
+  <ul class="links">
+    <li><a href="https://claude.ai/artifact/Tn7h7YA2W5BCmy29Rm3EHY">O10</a></li>
+    <li><a href="https://claude.ai/artifact/JX12XEqjDfdDaPnF1wH1ZR">O12</a></li>
+    <li><a href="https://claude.ai/artifact/65562QJpu6LDD8ycxWLAVV">O14</a></li>
+    <li><a href="https://claude.ai/artifact/CuWV28Mef6xuPLkSsE5Uwe">O18</a></li>
+    <li><a href="https://claude.ai/artifact/NxzARLvfYdx1H6t4hf4t9u">Gymles groep 3–6</a></li>
+    <li><a href="https://claude.ai/artifact/82B9bMMoKi86BE6kfXmi25">Gymles groep 7–8</a></li>
+  </ul>
+</section>
+</div>
+<script>
+if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(function(){});
+</script>
+</body>
+</html>
