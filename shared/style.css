@@ -107,3 +107,11 @@ fieldset.picks small{flex-basis:100%;color:var(--muted);font-size:.9rem}
 .tile:hover{border-color:var(--accent)}
 .links{margin:0;padding-left:20px;display:grid;gap:4px}
 .links a{color:var(--accent);font-weight:700}
+.prep{width:100%;justify-content:space-between;background:var(--surface);color:var(--head);border:0;border-left:6px solid var(--mark);border-radius:4px;box-shadow:var(--shadow);padding:14px 16px;text-align:left}
+.prep > span:first-child{display:grid;gap:2px}
+.prep b{font:800 1.3rem/1.1 var(--display)}
+.prep.ok{border-left-color:var(--good)}
+.prep-arrow{font-size:1.8rem;line-height:1;color:var(--accent)}
+dialog#prep{width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 48px);border:0;border-radius:6px;padding:18px 16px;background:var(--surface);color:var(--ink);box-shadow:0 10px 40px rgba(0,0,0,.35)}
+dialog#prep::backdrop{background:rgba(20,22,30,.55)}
+.dlg-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px}

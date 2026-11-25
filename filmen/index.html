@@ -33,6 +33,20 @@
   <div data-login></div>
 </section>
 
+<button type="button" class="prep" id="prepBtn" aria-haspopup="dialog">
+  <span><b>Voor je begint</b><span class="muted" id="prepCount"></span></span><span aria-hidden="true" class="prep-arrow">›</span>
+</button>
+
+<dialog id="prep" aria-labelledby="h-voor">
+  <div class="dlg-head"><h2 id="h-voor">Voor je begint</h2><button type="button" class="ghost small" id="prepClose">Sluiten</button></div>
+  <ul class="checks">
+    <li><label><input type="checkbox" id="v1"><span class="t"><span>Video op 1080p, niet 4K</span><small>iPhone: Instellingen › Camera › Video opnemen › 1080p HD bij 30 fps. Scheelt opslag en uploadtijd.</small></span></label></li>
+    <li><label><input type="checkbox" id="v2"><span class="t"><span>Statief, klem of tape om de telefoon vast te zetten</span></span></label></li>
+    <li><label><input type="checkbox" id="v3"><span class="t"><span>Hesjes in twee kleuren</span><small>Dan zijn teams en rollen op de beelden uit elkaar te houden.</small></span></label></li>
+    <li><label><input type="checkbox" id="v4"><span class="t"><span>Hele veld in beeld</span><small>Maak een testopname van 5 seconden en kijk hem terug.</small></span></label></li>
+  </ul>
+</dialog>
+
 <section aria-labelledby="h-camera">
   <h2 id="h-camera"><span class="no">1</span> Waar zet je de camera?</h2>
   <svg class="court" viewBox="0 0 400 240" role="img" aria-label="Bovenaanzicht van een zaal met de beste camerapositie hoog in de hoek, een goede positie midden aan de lange zijde en te vermijden posities achter het doel en tegenover de ramen">
@@ -70,18 +84,8 @@
   </ul>
 </section>
 
-<section aria-labelledby="h-voor">
-  <h2 id="h-voor"><span class="no">2</span> Voor je begint</h2>
-  <ul class="checks">
-    <li><label><input type="checkbox" id="v1"><span class="t"><span>Video op 1080p, niet 4K</span><small>iPhone: Instellingen › Camera › Video opnemen › 1080p HD bij 30 fps. Scheelt opslag en uploadtijd.</small></span></label></li>
-    <li><label><input type="checkbox" id="v2"><span class="t"><span>Statief, klem of tape om de telefoon vast te zetten</span></span></label></li>
-    <li><label><input type="checkbox" id="v3"><span class="t"><span>Hesjes in twee kleuren</span><small>Dan zijn teams en rollen op de beelden uit elkaar te houden.</small></span></label></li>
-    <li><label><input type="checkbox" id="v4"><span class="t"><span>Hele veld in beeld</span><small>Maak een testopname van 5 seconden en kijk hem terug.</small></span></label></li>
-  </ul>
-</section>
-
 <section aria-labelledby="h-shots">
-  <h2 id="h-shots"><span class="no">3</span> Wat je filmt</h2>
+  <h2 id="h-shots"><span class="no">2</span> Wat je filmt</h2>
   <p class="banner" id="offline">Log bovenaan in om filmpjes toe te voegen. Zonder inloggen vink je de opnames zelf af.</p>
 
   <div id="exWrap" class="hidden" style="display:grid;gap:10px">
@@ -102,7 +106,7 @@
 </section>
 
 <section aria-labelledby="h-oef">
-  <h2 id="h-oef"><span class="no">4</span> Beschrijving</h2>
+  <h2 id="h-oef"><span class="no">3</span> Beschrijving</h2>
   <form id="f" novalidate>
     <fieldset class="field picks" id="app"><legend>Leeftijdsgroepen</legend><small>Kies er één of meer</small></fieldset>
     <div class="field"><label for="naam">Naam van de oefening</label><input type="text" id="naam" placeholder="bijv. Driehoek passen"></div>
@@ -164,10 +168,20 @@
   function saveLocal(){ls.set(LKEY,local);}
 
   /* ---------- afvinklijst "Voor je begint" ---------- */
+  function prepCount(){
+    var all=document.querySelectorAll('#prep .checks input'),n=0;
+    Array.prototype.forEach.call(all,function(c){if(c.checked)n++;});
+    $('prepCount').textContent=n===all.length?'Alles klaar':n+' van '+all.length+' klaar';
+    $('prepBtn').classList.toggle('ok',n===all.length);
+  }
+  $('prepBtn').addEventListener('click',function(){var d=$('prep');if(d.showModal)d.showModal();else d.setAttribute('open','');});
+  $('prepClose').addEventListener('click',function(){var d=$('prep');if(d.close)d.close();else d.removeAttribute('open');});
+  $('prep').addEventListener('click',function(e){if(e.target===this&&this.close)this.close();});
   Array.prototype.slice.call(document.querySelectorAll('.checks input')).forEach(function(c){
     c.checked=!!(local.c&&local.c[c.id]);
-    c.addEventListener('change',function(){local.c=local.c||{};local.c[c.id]=c.checked;saveLocal();});
+    c.addEventListener('change',function(){local.c=local.c||{};local.c[c.id]=c.checked;saveLocal();prepCount();});
   });
+  prepCount();
 
   /* ---------- inloggen (shared/auth.js) ---------- */
   var online=false;
