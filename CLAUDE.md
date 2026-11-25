@@ -1,7 +1,7 @@
 # UFC Beheer — werkafspraken voor Claude
 
 Beheer-app ("backend") voor de floorball-apps van UFC Utrecht. Live op
-https://ufcutrecht.github.io/floorball-beheer/ (GitHub Pages, branch `main`, map root).
+https://ufcutrecht.github.io/floorball-film/ (GitHub Pages, branch `main`, map root).
 Alleen voor Remco (GitHub `remcovoort`): zet wijzigingen direct op `main`, zonder branch of pull request.
 
 De oefeningen zelf staan niet hier maar in `ufcutrecht/floorball-training` (zie de CLAUDE.md daar).
