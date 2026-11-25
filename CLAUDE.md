@@ -21,11 +21,24 @@ De oefeningen zelf staan niet hier maar in `ufcutrecht/floorball-training` (zie 
 
 ## Een gefilmde oefening verwerken
 
-Remco plakt de tekst van "Kopieer voor Claude" in de chat: de beschrijving en per filmpje een link
-die 7 dagen geldig is. Download de filmpjes met `curl`, haal er beelden uit met `ffmpeg`
-(bijvoorbeeld één beeld per 2 seconden) en maak daarmee de oefening in floorball-training,
-met tekening, reviewlijst en thema's volgens de CLAUDE.md daar.
-Leeftijdsgroepen kunnen meerdere zijn (O10, O12, O14, O18, Gymles groep 3–6, Gymles groep 7–8).
+Remco tikt in de app op "Insturen" en zegt in de chat "verwerk de nieuwe oefeningen".
+Lees ze via de Supabase-connector (project `agkhomwkcbvbdczqzzey`):
+
+```sql
+select id, data, updated_at from public.film_oefeningen where status = 'ingestuurd' order by updated_at;
+```
+
+`data` bevat de velden van de beschrijving (`app` = leeftijdsgroepen, kommagescheiden: O10, O12, O14,
+O18, Gymles groep 3–6, Gymles groep 7–8), `videos` (pad, label, seconden) en `links`: per pad een
+downloadlink die tot `linksTot` geldig is. Download de filmpjes met `curl`, haal er beelden uit met
+`ffmpeg` (bijvoorbeeld één beeld per 2 seconden) en maak de oefening in floorball-training, met
+tekening, reviewlijst en thema's volgens de CLAUDE.md daar. Is een link verlopen, vraag Remco dan
+op "Opnieuw insturen" te tikken.
+
+Zet de oefening daarna op verwerkt:
+`update public.film_oefeningen set status = 'verwerkt', updated_at = now() where id = '<id>';`
+
+Als reserve kan Remco met "Kopieer tekst" dezelfde beschrijving met links in de chat plakken.
 
 ## Testen
 

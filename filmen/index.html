@@ -124,7 +124,8 @@
   </form>
 
   <div class="btns">
-    <button type="button" class="primary" id="copy">Kopieer voor Claude</button>
+    <button type="button" class="primary hidden" id="send">Insturen</button>
+    <button type="button" class="ghost" id="copy">Kopieer tekst</button>
     <button type="button" class="ghost small hidden" id="done">Markeer als verwerkt</button>
     <button type="button" class="danger small hidden" id="del">Oefening verwijderen</button>
   </div>
@@ -134,7 +135,7 @@
     <button type="button" class="ghost small" id="delNo">Annuleren</button>
   </div>
   <p class="status" id="status" role="status"></p>
-  <p class="muted" style="margin:0">De knop kopieert de beschrijving met links naar de filmpjes (7 dagen geldig) en zet de oefening op "ingestuurd". Open daarna de chat met Claude, houd je vinger in het tekstvak en kies "Plak".</p>
+  <p class="muted" style="margin:0">Na "Insturen" zeg je in de chat met Claude: "verwerk de nieuwe oefeningen". Claude haalt de beschrijving en de filmpjes dan zelf op. "Kopieer tekst" is er voor als je de tekst toch wilt plakken.</p>
   <details>
     <summary class="muted">Tekst bekijken</summary>
     <pre class="out" id="out"></pre>
@@ -232,6 +233,7 @@
   function row(){
     var d={videos:cur.videos.map(function(x){return {path:x.path,label:x.label,name:x.name||'',sizeBytes:x.sizeBytes||0,seconds:x.seconds||0,type:x.type||''};})};
     FIELDS.forEach(function(k){d[k]=cur[k]||'';});
+    if(cur.links){d.links=cur.links;d.linksTot=cur.linksTot||null;}
     return {id:cur.id,data:d,status:cur.status,updated_at:new Date().toISOString()};
   }
   function save(now){
@@ -260,7 +262,7 @@
     if(!online||listBusy)return;listBusy=true;
     try{
       var rows=await api('/rest/v1/'+TABLE+'?select=id,data,status,updated_at&order=updated_at.desc&limit=100');
-      exercises=(rows||[]).map(function(r){var d=r.data||{};var o={id:r.id,status:r.status,updatedAt:r.updated_at,videos:Array.isArray(d.videos)?d.videos:[]};FIELDS.forEach(function(k){o[k]=typeof d[k]==='string'?d[k]:'';});return o;});
+      exercises=(rows||[]).map(function(r){var d=r.data||{};var o={id:r.id,status:r.status,updatedAt:r.updated_at,videos:Array.isArray(d.videos)?d.videos:[]};FIELDS.forEach(function(k){o[k]=typeof d[k]==='string'?d[k]:'';});if(d.links&&typeof d.links==='object'){o.links=d.links;o.linksTot=d.linksTot||null;}return o;});
       var mine=exercises.filter(function(e){return e.id===cur.id;})[0];
       if(mine&&mine.status!==cur.status){cur.status=mine.status;renderButtons();}
       renderList();
@@ -296,12 +298,27 @@
 
   /* ---------- knoppen ---------- */
   function renderButtons(){
-    $('copy').textContent=online&&cur.status==='concept'?'Insturen en kopiëren':'Kopieer voor Claude';
+    $('send').classList.toggle('hidden',!online);
+    $('send').textContent=cur.status==='concept'?'Insturen':(cur.status==='verwerkt'?'Verwerkt in de app':'Opnieuw insturen');
+    $('send').disabled=busy>0||cur.status==='verwerkt';
     $('copy').disabled=busy>0;
     $('done').classList.toggle('hidden',!(online&&cur.id&&cur.status==='ingestuurd'));
     $('del').classList.toggle('hidden',!(online&&cur.id));
     $('newEx').disabled=busy>0;
   }
+  /* Insturen: links naar de filmpjes (7 dagen geldig) opslaan in de oefening, zodat Claude
+     ze via de Supabase-koppeling zelf kan ophalen, en de status op "ingestuurd" zetten. */
+  $('send').addEventListener('click',async function(){
+    if(!hasContent()){setStatus('Vul eerst iets in of voeg een filmpje toe.','err');return;}
+    var b=$('send');b.disabled=true;setStatus('Insturen…');
+    try{
+      cur.links=cur.videos.length?await signed(cur.videos.map(function(x){return x.path;}),7*24*3600):{};
+      cur.linksTot=new Date(Date.now()+7*24*3600*1000).toISOString();
+      cur.status='ingestuurd';
+      await save(true);renderButtons();renderList();
+      setStatus('Ingestuurd. Zeg in de chat met Claude: "verwerk de nieuwe oefeningen".','ok');
+    }catch(e){setStatus('Insturen mislukt. Controleer je verbinding en probeer het opnieuw.','err');renderButtons();}
+  });
   $('done').addEventListener('click',function(){cur.status='verwerkt';renderButtons();save(true);});
   $('newEx').addEventListener('click',function(){
     if(busy)return;save(true);cur=blank();toForm();setStatus('');$('formTitle').scrollIntoView({behavior:'smooth',block:'start'});
@@ -349,7 +366,6 @@
     if(!hasContent()){setStatus('Vul eerst iets in of voeg een filmpje toe.','err');return;}
     var linkFail=false;
     var made=(async function(){
-      if(online&&cur.status==='concept'){cur.status='ingestuurd';renderButtons();await save(true);}
       var links=null;
       if(online&&cur.videos.length){try{links=await signed(cur.videos.map(function(x){return x.path;}),7*24*3600);}catch(e){linkFail=true;}}
       var t=text(links);$('out').textContent=t;return t;
